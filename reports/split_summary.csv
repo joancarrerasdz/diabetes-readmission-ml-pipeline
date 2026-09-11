@@ -1,0 +1,3 @@
+split,encounters,unique_patients,positive_30d,negative_30d,prevalence_30d
+train,79473,55952,9051,70422,0.11388773545732513
+test,19870,14038,2263,17607,0.11389028686462004
