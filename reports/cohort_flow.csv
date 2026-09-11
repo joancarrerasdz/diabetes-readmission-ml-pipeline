@@ -1,0 +1,6 @@
+stage,encounters,unique_patients
+raw_dataset,101766,71518
+excluded_non_interpretable_discharge,2423,2399
+primary_analytic_cohort,99343,69990
+patients_with_both_excluded_and_retained_encounters,,871
+patients_only_in_excluded_encounters,,1528

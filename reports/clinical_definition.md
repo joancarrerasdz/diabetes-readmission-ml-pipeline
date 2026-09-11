@@ -59,11 +59,34 @@ Exact exclusion codes must be verified against the official UCI ID mapping befor
 
 ## Cohort exclusions
 
-No encounter has yet been removed.
+The primary analysis excludes encounters whose discharge disposition makes subsequent hospital readmission non-interpretable.
 
-Before modelling, encounters whose discharge disposition makes future hospital readmission non-interpretable will be excluded using the official UCI mapping.
+The exclusion is applied at the encounter level, not the patient level.
 
-All exclusions will be applied reproducibly and their counts will be reported.
+Excluded `discharge_disposition_id` values:
+
+- `11`: Expired
+- `13`: Hospice / home
+- `14`: Hospice / medical facility
+- `19`: Expired at home. Medicaid only, hospice.
+- `20`: Expired in a medical facility. Medicaid only, hospice.
+- `21`: Expired, place unknown. Medicaid only, hospice.
+
+These codes were verified against the official UCI `IDS_mapping.csv`.
+
+Starting cohort:
+
+- 101,766 encounters
+- 71,518 unique patients
+
+After exclusion:
+
+- 99,343 encounters
+- 69,990 unique patients
+
+A total of 2,423 encounters are excluded.
+
+Importantly, 871 patients have both excluded and retained encounters. Therefore, only non-interpretable encounters are removed; patients are not globally excluded because of another encounter.
 
 ## Evaluation principle
 
