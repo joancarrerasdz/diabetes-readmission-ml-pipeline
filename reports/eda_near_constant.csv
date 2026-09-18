@@ -1,0 +1,16 @@
+variable,dtype,n_unique_including_na,most_common_value,most_common_n,most_common_pct,constant,near_constant_99pct
+nateglinide,str,4,No,78901,0.9928025870421401,False,True
+chlorpropamide,str,4,No,79409,0.999194695053666,False,True
+miglitol,str,4,No,79435,0.9995218501881142,False,True
+acarbose,str,4,No,79236,0.997017855120607,False,True
+glyburide-metformin,str,4,No,78901,0.9928025870421401,False,True
+tolazamide,str,3,No,79440,0.9995847646370466,False,True
+tolbutamide,str,2,No,79454,0.9997609250940571,False,True
+acetohexamide,str,2,No,79472,0.9999874171102136,False,True
+glipizide-metformin,str,2,No,79460,0.9998364224327759,False,True
+troglitazone,str,2,No,79471,0.9999748342204271,False,True
+metformin-pioglitazone,str,2,No,79472,0.9999874171102136,False,True
+metformin-rosiglitazone,str,2,No,79472,0.9999874171102136,False,True
+citoglipton,str,1,No,79473,1.0,True,True
+examide,str,1,No,79473,1.0,True,True
+glimepiride-pioglitazone,str,1,No,79473,1.0,True,True

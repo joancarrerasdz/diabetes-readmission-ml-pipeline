@@ -1,0 +1,11 @@
+metric,value
+rows_before,79473
+rows_after,79473
+columns_before,51
+columns_after,47
+columns_dropped,4
+remaining_null_cells,0
+dropped::citoglipton,1
+dropped::examide,1
+dropped::glimepiride-pioglitazone,1
+dropped::weight,1

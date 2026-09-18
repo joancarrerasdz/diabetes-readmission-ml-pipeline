@@ -1,0 +1,51 @@
+name,project_category,null_pct,n_unique_including_na,most_common_pct,eda_decision,eda_rationale
+encounter_id,identifier,0.0,79473,1.258288978646836e-05,EXCLUDE_IDENTIFIER,Identifier without clinical predictive meaning.
+patient_nbr,identifier,0.0,55952,0.0005033155914587,GROUP_ONLY,Patient identifier used only to prevent leakage across splits.
+race,demographic,0.0225359556075648,6,0.7467441772677513,KEEP_MISSING_AS_CATEGORY_AUDIT,Candidate predictor and subgroup-audit variable; missingness retained explicitly.
+gender,demographic,0.0,3,0.5390384155625181,KEEP_AS_CATEGORY_AUDIT,Candidate categorical predictor retained also for subgroup performance auditing.
+age,demographic,0.0,10,0.2555081600040265,KEEP_AS_ORDINAL_AUDIT,Ordered age bands retained for modelling and subgroup performance auditing.
+weight,demographic,0.968832181998918,10,0.968832181998918,DROP_EXCESSIVE_MISSINGNESS,Approximately 97% missing in training; insufficient information for the primary model.
+admission_type_id,admission_context,0.0,8,0.5293118417575781,KEEP,Eligible predictor with no current data-quality reason for exclusion.
+discharge_disposition_id,discharge_context,0.0,21,0.6067217797239314,COHORT_ONLY,Used for cohort definition and excluded from primary predictors.
+admission_source_id,admission_context,0.0,17,0.5637763768827149,KEEP,Eligible predictor with no current data-quality reason for exclusion.
+time_in_hospital,encounter_course,0.0,14,0.1763869490267134,KEEP,Eligible predictor with no current data-quality reason for exclusion.
+payer_code,administrative,0.3971663332200873,18,0.3971663332200873,KEEP_MISSING_AS_CATEGORY,Substantial missingness is retained explicitly as a category rather than silently imputed.
+medical_specialty,administrative,0.4904810438765367,72,0.4904810438765367,KEEP_RECODE_RARE_LATER,Substantial missingness and many categories; preserve raw values now and group rare categories during feature engineering.
+num_lab_procedures,encounter_course,0.0,117,0.0316333849231814,KEEP,Eligible predictor with no current data-quality reason for exclusion.
+num_procedures,encounter_course,0.0,7,0.4603953543970908,KEEP,Eligible predictor with no current data-quality reason for exclusion.
+num_medications,encounter_course,0.0,75,0.0597813093755111,KEEP,Eligible predictor with no current data-quality reason for exclusion.
+number_outpatient,prior_utilization,0.0,38,0.8344595019692223,KEEP,Eligible predictor with no current data-quality reason for exclusion.
+number_emergency,prior_utilization,0.0,30,0.8878235375536345,KEEP,Eligible predictor with no current data-quality reason for exclusion.
+number_inpatient,prior_utilization,0.0,21,0.666943490241969,KEEP,Eligible predictor with no current data-quality reason for exclusion.
+diag_1,diagnosis,0.0002013262365834,695,0.0678721075082103,KEEP_RECODE_CLINICAL_GROUPS_LATER,Very high ICD-9 cardinality; preserve raw codes now and derive broader clinical groups during feature engineering.
+diag_2,diagnosis,0.0035861235891434,720,0.0655946044568595,KEEP_RECODE_CLINICAL_GROUPS_LATER,Very high ICD-9 cardinality; preserve raw codes now and derive broader clinical groups during feature engineering.
+diag_3,diagnosis,0.0143822430259333,762,0.1148817837504561,KEEP_RECODE_CLINICAL_GROUPS_LATER,Very high ICD-9 cardinality; preserve raw codes now and derive broader clinical groups during feature engineering.
+number_diagnoses,encounter_course,0.0,16,0.4819624274910976,KEEP,Eligible predictor with no current data-quality reason for exclusion.
+max_glu_serum,laboratory,0.9484856492141984,4,0.9484856492141984,KEEP_NOT_MEASURED_AS_CATEGORY,The source variable represents whether the laboratory test was measured and its result; absence is retained explicitly as a not-measured category.
+A1Cresult,laboratory,0.8299296616460936,4,0.8299296616460936,KEEP_NOT_MEASURED_AS_CATEGORY,The source variable represents whether the laboratory test was measured and its result; absence is retained explicitly as a not-measured category.
+metformin,medication,0.0,4,0.8004227850968253,KEEP,Eligible predictor with no current data-quality reason for exclusion.
+repaglinide,medication,0.0,4,0.9851899387213268,KEEP,Eligible predictor with no current data-quality reason for exclusion.
+nateglinide,medication,0.0,4,0.99280258704214,KEEP_RARE_REVIEW,Rare but non-constant medication feature; rarity alone is not sufficient justification for removal.
+chlorpropamide,medication,0.0,4,0.999194695053666,KEEP_RARE_REVIEW,Rare but non-constant medication feature; rarity alone is not sufficient justification for removal.
+glimepiride,medication,0.0,4,0.949064462144376,KEEP,Eligible predictor with no current data-quality reason for exclusion.
+acetohexamide,medication,0.0,2,0.9999874171102136,KEEP_RARE_REVIEW,Rare but non-constant medication feature; rarity alone is not sufficient justification for removal.
+glipizide,medication,0.0,4,0.8746492519472022,KEEP,Eligible predictor with no current data-quality reason for exclusion.
+glyburide,medication,0.0,4,0.8937626615328477,KEEP,Eligible predictor with no current data-quality reason for exclusion.
+tolbutamide,medication,0.0,2,0.9997609250940572,KEEP_RARE_REVIEW,Rare but non-constant medication feature; rarity alone is not sufficient justification for removal.
+pioglitazone,medication,0.0,4,0.9278497099643904,KEEP,Eligible predictor with no current data-quality reason for exclusion.
+rosiglitazone,medication,0.0,4,0.936355743460043,KEEP,Eligible predictor with no current data-quality reason for exclusion.
+acarbose,medication,0.0,4,0.997017855120607,KEEP_RARE_REVIEW,Rare but non-constant medication feature; rarity alone is not sufficient justification for removal.
+miglitol,medication,0.0,4,0.9995218501881142,KEEP_RARE_REVIEW,Rare but non-constant medication feature; rarity alone is not sufficient justification for removal.
+troglitazone,medication,0.0,2,0.9999748342204272,KEEP_RARE_REVIEW,Rare but non-constant medication feature; rarity alone is not sufficient justification for removal.
+tolazamide,medication,0.0,3,0.9995847646370466,KEEP_RARE_REVIEW,Rare but non-constant medication feature; rarity alone is not sufficient justification for removal.
+examide,medication,0.0,1,1.0,DROP_CONSTANT,No variation in the training cohort.
+citoglipton,medication,0.0,1,1.0,DROP_CONSTANT,No variation in the training cohort.
+insulin,medication,0.0,4,0.4662212323682257,KEEP,Eligible predictor with no current data-quality reason for exclusion.
+glyburide-metformin,medication,0.0,4,0.99280258704214,KEEP_RARE_REVIEW,Rare but non-constant medication feature; rarity alone is not sufficient justification for removal.
+glipizide-metformin,medication,0.0,2,0.999836422432776,KEEP_RARE_REVIEW,Rare but non-constant medication feature; rarity alone is not sufficient justification for removal.
+glimepiride-pioglitazone,medication,0.0,1,1.0,DROP_CONSTANT,No variation in the training cohort.
+metformin-rosiglitazone,medication,0.0,2,0.9999874171102136,KEEP_RARE_REVIEW,Rare but non-constant medication feature; rarity alone is not sufficient justification for removal.
+metformin-pioglitazone,medication,0.0,2,0.9999874171102136,KEEP_RARE_REVIEW,Rare but non-constant medication feature; rarity alone is not sufficient justification for removal.
+change,medication,0.0,2,0.5358171957771822,KEEP,Eligible predictor with no current data-quality reason for exclusion.
+diabetesMed,medication,0.0,2,0.7724258553219332,KEEP,Eligible predictor with no current data-quality reason for exclusion.
+readmitted,target,0.0,3,0.5280032212197854,TARGET_ONLY,Future outcome; never eligible as a predictor.

@@ -1,0 +1,9 @@
+metric,value
+encounters,79473.0
+unique_patients,55952.0
+columns,51.0
+duplicate_encounter_id,0.0
+duplicate_rows,0.0
+positive_30d,9051.0
+negative_30d,70422.0
+prevalence_30d,0.11388773545732513
