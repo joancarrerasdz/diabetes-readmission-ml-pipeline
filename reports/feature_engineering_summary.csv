@@ -1,0 +1,15 @@
+metric,value
+rows_before,79473
+rows_after,79473
+columns_before,47
+columns_after,47
+candidate_features_before,42
+candidate_features_after,42
+replaced_raw::age,1
+replaced_raw::diag_1,1
+replaced_raw::diag_2,1
+replaced_raw::diag_3,1
+engineered::age_midpoint,1
+engineered::diag_1_group,1
+engineered::diag_2_group,1
+engineered::diag_3_group,1
