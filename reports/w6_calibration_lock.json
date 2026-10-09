@@ -1,0 +1,23 @@
+{
+  "week": 6,
+  "stage": "probability_calibration",
+  "status": "locked",
+  "candidate_model": "random_forest",
+  "calibration_strategy": "sigmoid",
+  "selection_basis": "frozen_w6_calibration_protocol",
+  "selection_data": "patient_safe_cross_fitted_oof_predictions",
+  "primary_metric": "brier_score",
+  "uncalibrated_brier_score": 0.097992,
+  "sigmoid_brier_score": 0.097329,
+  "isotonic_brier_score": 0.097422,
+  "sigmoid_paired_brier_improvement_mean": 0.00066302,
+  "sigmoid_paired_brier_improvement_se": 0.00008955,
+  "sigmoid_eligible": true,
+  "isotonic_paired_brier_improvement_mean": 0.00056951,
+  "isotonic_paired_brier_improvement_se": 0.00011513,
+  "isotonic_eligible": true,
+  "decision": "sigmoid",
+  "decision_rationale": "Both calibrated strategies satisfied the frozen eligibility rule. Isotonic did not improve over sigmoid by more than one standard error of the paired fold-level Brier difference, so sigmoid was selected according to the pre-specified simplicity rule.",
+  "threshold_selected": false,
+  "held_out_test_accessed": false
+}
