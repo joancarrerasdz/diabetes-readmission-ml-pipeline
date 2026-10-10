@@ -1,0 +1,36 @@
+{
+  "week": 6,
+  "stage": "operating_threshold",
+  "status": "locked",
+  "candidate_model": "random_forest",
+  "calibration_strategy": "sigmoid",
+  "probability_column": "sigmoid_probability",
+  "operating_threshold": 0.110,
+  "selection_protocol": "frozen_w6_threshold_protocol",
+  "selection_data": "patient_safe_cross_fitted_calibrated_oof_predictions",
+  "selection_primary_metric": "mean_balanced_accuracy",
+  "tie_break_order": [
+    "higher_mean_sensitivity",
+    "higher_mean_f1",
+    "lower_threshold"
+  ],
+  "threshold_grid": {
+    "minimum": 0.010,
+    "maximum": 0.500,
+    "step": 0.005,
+    "candidate_thresholds": 99
+  },
+  "mean_balanced_accuracy": 0.602984,
+  "sd_balanced_accuracy": 0.012366,
+  "mean_sensitivity": 0.591758,
+  "mean_specificity": 0.614211,
+  "mean_precision": 0.164594,
+  "mean_f1": 0.257535,
+  "mean_predicted_positive_rate": 0.409246,
+  "clinical_threshold": false,
+  "calibration_changed": false,
+  "model_changed": false,
+  "hyperparameters_changed": false,
+  "preprocessing_changed": false,
+  "held_out_test_accessed": false
+}

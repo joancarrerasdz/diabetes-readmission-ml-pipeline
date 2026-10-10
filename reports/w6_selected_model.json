@@ -1,0 +1,24 @@
+{
+  "calibration_strategy_locked": false,
+  "estimator": "RandomForestClassifier",
+  "held_out_test_accessed": false,
+  "hyperparameter_stability": "same configuration selected in 5/5 outer folds",
+  "hyperparameters": {
+    "class_weight": null,
+    "max_depth": 12,
+    "min_samples_leaf": 5,
+    "n_estimators": 300,
+    "random_state": 42
+  },
+  "mean_outer_brier_score": 0.0979916880584527,
+  "mean_outer_pr_auc": 0.2070169636632286,
+  "mean_outer_roc_auc": 0.6473068944726207,
+  "primary_metric": "PR-AUC",
+  "sd_outer_pr_auc": 0.0102003609156758,
+  "se_outer_pr_auc": 0.0045617400804966,
+  "selected_model": "random_forest",
+  "selection_rule": "one-standard-error rule followed by probability quality, ROC-AUC, stability and methodological considerations",
+  "selection_status": "candidate_model_locked",
+  "threshold_locked": false,
+  "week": 6
+}
