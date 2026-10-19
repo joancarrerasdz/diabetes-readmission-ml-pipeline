@@ -204,7 +204,7 @@ Approximate OOF performance:
 
 Five-fold ROC-AUC is approximately 0.641 with low between-fold variation.
 
-### Random forest
+### Week 5 random-forest baseline (historical)
 
 A predefined Random Forest was evaluated as a non-linear comparator.
 
@@ -233,7 +233,7 @@ Relative to logistic regression:
 The Random Forest therefore provides a modest improvement in
 discrimination but not in probability accuracy.
 
-## Calibration
+## Week 5 calibration diagnostics (historical)
 
 Out-of-fold logistic-regression probabilities have been examined using
 calibration bins.
@@ -246,7 +246,7 @@ Calibration assessment remains descriptive at this stage.
 
 No post-hoc calibration model has been fitted.
 
-## Classification threshold
+## Week 5 classification-threshold diagnostics (historical)
 
 No operating threshold has been selected or locked.
 
@@ -346,3 +346,193 @@ Weeks 1–5 have established:
 
 The next modelling stage should begin only after this Week-5 baseline
 state is merged and treated as the new reproducible project baseline.
+
+---
+
+## Final locked model and Week 7 held-out evaluation
+
+The Week-5 analyses above document the baseline-development state at that
+point in the project. They are retained as development history.
+
+Subsequent Week-6 model selection, calibration selection and
+operating-threshold selection supersede those baseline settings for the final
+model described below.
+
+### Final development specification
+
+The final candidate was selected exclusively from the training cohort using
+patient-grouped nested cross-validation.
+
+The locked model family is:
+
+- Random Forest classifier
+- `n_estimators = 300`
+- `max_depth = 12`
+- `min_samples_leaf = 5`
+- `class_weight = None`
+- `random_state = 42`
+
+Model preprocessing and the 42-feature model schema were locked before the
+held-out test set was accessed.
+
+The selected probability-calibration strategy is:
+
+- sigmoid calibration
+
+The locked operating threshold is:
+
+- `0.110`
+
+This threshold is an operating point for the predictive-development pipeline.
+It must not be interpreted as a clinically validated intervention or treatment
+threshold.
+
+### Week 6 development evidence
+
+Patient-safe nested cross-validation supported selection of the Random Forest
+candidate.
+
+Approximate nested-CV performance for the selected model was:
+
+- PR-AUC: 0.2058
+- mean fold PR-AUC: 0.2070
+- ROC-AUC: 0.6472
+- mean fold ROC-AUC: 0.6473
+- Brier score: 0.0980
+
+The selected hyperparameter configuration was stable across all five outer
+folds.
+
+After cross-fitted calibration, sigmoid calibration was selected under the
+frozen Week-6 calibration protocol.
+
+Approximate cross-fitted sigmoid-calibrated performance was:
+
+- Brier score: 0.09733
+- log loss: 0.33916
+- PR-AUC: 0.20571
+- ROC-AUC: 0.64708
+- calibration intercept: -0.00243
+- calibration slope: 0.99879
+- ECE: 0.00320
+
+The final operating threshold of 0.110 was selected from patient-safe,
+cross-fitted calibrated out-of-fold predictions using the frozen
+balanced-accuracy criterion and prespecified tie-breaking rules.
+
+Development performance at threshold 0.110 was approximately:
+
+- mean balanced accuracy: 0.6030
+- mean sensitivity: 0.5918
+- mean specificity: 0.6142
+- mean precision: 0.1646
+- mean F1: 0.2575
+- mean predicted-positive rate: 0.4092
+
+The held-out test set was not used for model-family selection,
+hyperparameter selection, calibration selection or threshold selection.
+
+### Final held-out cohort
+
+The final held-out test set contained:
+
+- 19,870 encounters
+- 14,038 unique patients
+- 2,263 readmissions within 30 days
+- 11.389% 30-day readmission prevalence
+
+There was no patient overlap between the development and held-out cohorts.
+
+The Week-7 pre-flight gate passed before any predictive model was fitted to the
+held-out cohort.
+
+### Final held-out performance
+
+The locked pipeline was evaluated once on the held-out test set.
+
+Probability-level performance:
+
+- PR-AUC: 0.192383
+- ROC-AUC: 0.645006
+- Brier score: 0.098020
+- log loss: 0.340966
+- mean predicted probability: 0.114198
+
+Calibration diagnostics:
+
+- calibration intercept: -0.098333
+- calibration slope: 0.951253
+- ECE: 0.006471
+
+Performance at the locked operating threshold of 0.110:
+
+- sensitivity: 0.592576
+- specificity: 0.611461
+- precision: 0.163896
+- F1 score: 0.256774
+- balanced accuracy: 0.602019
+- predicted-positive rate: 0.411777
+
+Final confusion matrix:
+
+- true positives: 1,341
+- false positives: 6,841
+- true negatives: 10,766
+- false negatives: 922
+
+The final held-out discrimination and threshold-dependent performance were
+broadly consistent with the pre-specified development estimates, with a
+modest reduction in PR-AUC and similar ROC-AUC, Brier score and balanced
+accuracy.
+
+### Interpretation
+
+The final model provides modest discrimination for 30-day readmission risk.
+
+Its main value in this project is methodological: it demonstrates a fully
+reproducible patient-safe machine-learning workflow with:
+
+- patient-level development splitting;
+- training-only preprocessing;
+- fold-safe feature transformation;
+- nested cross-validation;
+- pre-specified model selection;
+- cross-fitted probability calibration;
+- pre-specified operating-threshold selection;
+- a protected one-time held-out evaluation.
+
+The operating threshold yields a sensitivity and specificity close to 0.6.
+Because the outcome is imbalanced, precision remains low and the
+predicted-positive rate is substantially higher than the observed event
+prevalence.
+
+These results do not establish clinical utility.
+
+### Held-out test-set status
+
+The held-out test set has now been consumed for this development iteration.
+
+It must not be reused for:
+
+- hyperparameter tuning;
+- feature engineering;
+- model-family selection;
+- calibration selection;
+- threshold optimisation;
+- performance-driven modification of the current model.
+
+Any future model improvement must be treated as a new development iteration
+and should use new independent validation data.
+
+### Final development status
+
+The following components are frozen:
+
+1. model family: Random Forest;
+2. model hyperparameters;
+3. preprocessing and feature schema;
+4. calibration strategy: sigmoid;
+5. operating threshold: 0.110;
+6. final held-out evaluation.
+
+The Week-7 held-out evaluation closes the current model-development cycle.
