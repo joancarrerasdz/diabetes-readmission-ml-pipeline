@@ -1,0 +1,8 @@
+{
+  "calibration_strategy": "sigmoid",
+  "candidate_model": "random_forest",
+  "operating_threshold": 0.11,
+  "stage": "final_held_out_evaluation",
+  "status": "completed",
+  "week": 7
+}
