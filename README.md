@@ -1,13 +1,8 @@
 # Diabetes 30-Day Readmission — Reproducible Machine-Learning Pipeline
 
-A reproducible machine-learning project for predicting **30-day hospital
-readmission among patients with diabetes**, with particular emphasis on
-patient-level leakage prevention, probability calibration, transparent model
-selection and protected final evaluation.
+A reproducible machine-learning project for predicting **30-day hospital readmission among patients with diabetes**, with particular emphasis on patient-level leakage prevention, probability calibration, transparent model selection and protected final evaluation.
 
-The project follows a staged development workflow in which model selection,
-calibration and operating-threshold decisions were completed using development
-data before a single final evaluation on an untouched held-out test set.
+The project follows a staged development workflow in which model selection, calibration and operating-threshold decisions were completed using development data before a single final evaluation on an untouched held-out test set.
 
 ---
 
@@ -15,8 +10,7 @@ data before a single final evaluation on an untouched held-out test set.
 
 **Development cycle completed.**
 
-The final Week-7 held-out evaluation has been performed and the test set is now
-considered consumed for this development iteration.
+The final Week-7 held-out evaluation has been performed and the test set is now considered consumed for this development iteration.
 
 The frozen final specification is:
 
@@ -33,245 +27,228 @@ The frozen final specification is:
 | Operating threshold | 0.110 |
 | Final evaluation | One-time protected held-out assessment |
 
-No post-hoc model, calibration or threshold modification was performed after
-observing held-out performance.
+No post-hoc model, calibration or threshold modification was performed after observing held-out performance.
 
 ---
 
 ## Clinical prediction problem
 
-Hospital readmission is an important outcome in healthcare because it may
-reflect disease complexity, comorbidity burden, treatment requirements and
-care-transition challenges.
+Hospital readmission is an important outcome in healthcare because it may reflect disease complexity, comorbidity burden, treatment requirements and care-transition challenges.
 
 This project addresses the following predictive question:
 
-> Using information available from a hospital encounter, can a reproducible
-> machine-learning pipeline estimate the probability of readmission within
-> 30 days for patients with diabetes?
+> Using information available from a hospital encounter, can a reproducible machine-learning pipeline estimate the probability of readmission within 30 days for patients with diabetes?
 
 The binary target used throughout the modelling pipeline is:
 
-```text
-readmitted_30d
-```
+`readmitted_30d`
 
-where:
-
-```text
-1 = readmission within 30 days
-0 = no readmission within 30 days
-```
-
-This project evaluates **prediction**, not causal effects or clinical
-interventions.
+The objective is predictive rather than causal. The project does not attempt to determine whether any specific treatment or clinical factor causes readmission.
 
 ---
 
-## Dataset and cohort
+## Final held-out performance
 
-The project uses the Diabetes 130-US hospitals dataset and constructs a
-patient-aware modelling cohort.
+The final protected evaluation used **19,870 encounters**, including **2,263 30-day readmissions**, corresponding to an event prevalence of approximately **11.39%**.
 
-A central methodological requirement is that encounters from the same patient
-must not appear simultaneously in training and validation/test partitions.
+| Metric | Final held-out result |
+|---|---:|
+| ROC-AUC | **0.6450** |
+| PR-AUC | **0.1924** |
+| Brier score | **0.0980** |
+| Log loss | **0.3410** |
+| Balanced accuracy | **0.6020** |
+| Sensitivity | **0.5926** |
+| Specificity | **0.6115** |
+| Precision | **0.1639** |
+| F1 score | **0.2568** |
+| Operating threshold | **0.110** |
 
-The final development structure contained:
+The final mean predicted probability was approximately **0.1142**, close to the observed event prevalence.
 
-| Cohort | Encounters | Unique patients |
+The results indicate moderate discrimination. Because 30-day readmission is relatively uncommon, precision remains low despite sensitivity and specificity both being close to 0.60.
+
+These results do not establish clinical utility.
+
+---
+
+## Final performance visualization
+
+![Final held-out performance summary](figures/w7_final_performance_summary.png)
+
+The figure above summarises the final frozen performance metrics obtained from the protected held-out cohort.
+
+It is a reporting artefact generated after the Week-7 evaluation and does not perform model fitting, threshold optimisation, calibration fitting or any other modelling decision.
+
+---
+
+## Final confusion matrix
+
+![Final held-out confusion matrix](figures/w7_final_confusion_matrix.png)
+
+At the pre-specified operating threshold of **0.110**, the held-out confusion matrix was:
+
+| | Predicted negative | Predicted positive |
 |---|---:|---:|
-| Development / training | 79,473 | 55,952 |
-| Final held-out test | 19,870 | 14,038 |
+| Actual negative | 10,766 | 6,841 |
+| Actual positive | 922 | 1,341 |
 
-Patient overlap between the development and held-out cohorts was verified to be:
+Therefore:
 
-```text
-0
-```
+- true negatives: **10,766**
+- false positives: **6,841**
+- false negatives: **922**
+- true positives: **1,341**
 
-The held-out cohort remained inaccessible during model development,
-hyperparameter selection, calibration selection and operating-threshold
-selection.
+This operating point yields:
 
----
+- sensitivity: approximately **0.593**
+- specificity: approximately **0.611**
+- precision: approximately **0.164**
+- F1 score: approximately **0.257**
+- balanced accuracy: approximately **0.602**
 
-## Why patient-level splitting matters
+The predicted-positive rate is approximately **41.2%**, substantially higher than the observed 30-day readmission prevalence.
 
-The dataset contains repeated encounters for some patients.
+This reflects the pre-specified balanced-accuracy threshold-selection objective and its associated sensitivity/specificity trade-off.
 
-A conventional encounter-level random split could therefore allow different
-encounters belonging to the same individual to appear in both development and
-validation data.
-
-That would create a clinically important form of information leakage.
-
-To prevent this, the project uses the patient identifier:
-
-```text
-patient_nbr
-```
-
-as the grouping variable throughout the development workflow.
-
-All major validation procedures therefore preserve patient independence.
+The threshold must not be interpreted as a clinically validated intervention threshold.
 
 ---
 
-## Project workflow
+## Final probability calibration
 
-The project was developed incrementally.
+![Final held-out calibration](figures/w7_final_calibration.png)
 
-### Week 1 — Data acquisition and cohort construction
+The final Random Forest probabilities were calibrated using the **sigmoid calibration strategy selected and locked during Week 6**.
+
+Held-out calibration results were:
+
+| Calibration metric | Result |
+|---|---:|
+| Brier score | **0.0980** |
+| Calibration intercept | **-0.0983** |
+| Calibration slope | **0.9513** |
+| ECE | **0.0065** |
+
+A calibration slope close to 1 and the low expected calibration error indicate reasonably aligned predicted and observed probabilities on this held-out cohort.
+
+These findings do not establish calibration transportability to another hospital, time period or patient population.
+
+---
+
+## Development workflow
+
+The project follows a deliberately staged machine-learning development process.
+
+### Week 1 — Data acquisition and cohort definition
 
 The initial stage established:
 
-- reproducible dataset loading;
-- target construction;
-- cohort definition;
-- deterministic data processing;
-- project structure and version control.
+- reproducible data acquisition;
+- target definition;
+- cohort construction;
+- initial data-quality safeguards.
 
 ### Week 2 — Patient-safe partitioning
 
-The dataset was separated into development and held-out cohorts while ensuring:
+The dataset was partitioned at the **patient level** rather than only at the encounter level.
+
+This prevents encounters belonging to the same patient from appearing in both development and held-out partitions.
+
+The final held-out cohort contains:
+
+- **19,870 encounters**
+- **14,038 unique patients**
+
+with:
 
 - zero patient overlap;
-- deterministic splitting;
-- preservation of the final held-out cohort for later evaluation.
+- zero encounter overlap.
 
-### Week 3 — Training-only clinical EDA and cleaning
+### Week 3 — Training-only exploratory analysis and cleaning
 
-Exploratory analysis and cleaning decisions were performed using development
-data only.
+Exploratory analysis and deterministic cleaning were developed using training data only.
 
-This prevented information from the held-out test set influencing feature or
-cleaning decisions.
+The held-out set remained outside the model-development process.
 
-### Week 4 — Clinical feature engineering
+### Week 4 — Feature engineering and model schema
 
-A deterministic modelling schema was created from clinically interpretable
-encounter variables.
+Clinical and administrative variables were transformed into a reproducible modelling schema.
 
-The final modelling schema contains:
+The final model uses **42 features**.
 
-```text
-42 features
-```
-
-including numerical, categorical and medical-specialty information.
+The preprocessing and feature schema were frozen before final evaluation.
 
 ### Week 5 — Baseline modelling
 
-Two initial model families were evaluated:
+Patient-safe out-of-fold development evaluation was used to establish baseline predictive performance.
+
+The principal baseline model families were:
 
 - Logistic Regression
 - Random Forest
 
-Evaluation used patient-grouped out-of-fold predictions.
+The Week-5 analyses remain in the repository as historical development evidence.
 
-This stage established baseline discrimination, probability quality and
-between-fold stability.
+### Week 6 — Model selection
 
-### Week 6 — Nested model selection
+Formal model selection used **patient-grouped nested cross-validation**.
 
-Candidate model configurations were evaluated using patient-grouped nested
-cross-validation.
+The primary selection metric was **PR-AUC**, reflecting the imbalanced binary outcome.
 
-Model selection used development data only.
+The final candidate model family was:
 
-The primary model-selection metric was:
-
-```text
-PR-AUC
-```
-
-with additional consideration of:
-
-- ROC-AUC;
-- Brier score;
-- between-fold stability;
-- probability behaviour;
-- interpretability;
-- methodological simplicity.
-
-The selected model family was:
-
-```text
-Random Forest
-```
+**Random Forest**
 
 with:
 
-```text
-n_estimators = 300
-max_depth = 12
-min_samples_leaf = 5
-class_weight = None
-random_state = 42
-```
+- `n_estimators = 300`
+- `max_depth = 12`
+- `min_samples_leaf = 5`
+- `class_weight = None`
+- `random_state = 42`
 
-The same configuration was selected across all five outer folds.
+The same Random Forest configuration was selected in all five outer folds.
 
-Approximate nested-CV performance of the selected Random Forest was:
-
-| Metric | Development estimate |
-|---|---:|
-| PR-AUC | 0.2070 |
-| ROC-AUC | 0.6473 |
-| Brier score | 0.0980 |
-
-These values represent development performance and are not final held-out
-results.
+The candidate model was selected exclusively from development data.
 
 ### Week 6 — Probability calibration
 
-Calibration was evaluated using cross-fitted development predictions.
+Probability calibration was evaluated separately from model-family selection.
 
-The compared strategies were:
+Three strategies were compared:
 
 - uncalibrated probabilities;
 - sigmoid calibration;
 - isotonic calibration.
 
-Both calibrated approaches satisfied the pre-specified eligibility criterion.
+Both calibrated alternatives satisfied the frozen eligibility rule.
 
-Because isotonic calibration did not improve sufficiently over sigmoid
-calibration under the frozen decision rule, the simpler strategy was selected.
+Because isotonic calibration did not improve over sigmoid by more than one standard error of the paired fold-level Brier difference, **sigmoid calibration** was selected according to the pre-specified simplicity rule.
 
-The locked calibration strategy was therefore:
-
-```text
-sigmoid
-```
-
-This decision was completed before the held-out test set was accessed.
+The calibration strategy was locked before threshold selection and before the held-out test set was accessed.
 
 ### Week 6 — Operating-threshold selection
 
-Operating-threshold selection was performed using patient-safe calibrated
-out-of-fold predictions.
+Operating-threshold selection was performed using patient-safe, cross-fitted, calibrated development predictions.
 
-The frozen primary criterion was:
+Candidate thresholds ranged from **0.010 to 0.500** in increments of **0.005**.
 
-```text
-mean balanced accuracy
-```
+The frozen selection hierarchy was:
 
-with deterministic tie-breaking based on:
-
-1. higher mean sensitivity;
-2. higher mean F1 score;
-3. lower threshold.
+1. highest mean balanced accuracy;
+2. higher mean sensitivity if tied;
+3. higher mean F1 if still tied;
+4. lower threshold if still tied.
 
 The selected operating threshold was:
 
-```text
-0.110
-```
+**0.110**
 
-Development estimates at this threshold were approximately:
+Development out-of-fold performance at this operating point was approximately:
 
-| Metric | Development estimate |
+| Metric | Development OOF |
 |---|---:|
 | Balanced accuracy | 0.6030 |
 | Sensitivity | 0.5918 |
@@ -280,469 +257,396 @@ Development estimates at this threshold were approximately:
 | F1 | 0.2575 |
 | Predicted-positive rate | 0.4092 |
 
-This threshold is an operating point for the predictive-development pipeline.
-
-It is **not** a clinically validated intervention threshold.
+The threshold was then explicitly locked.
 
 ### Week 7 — Protected final evaluation
 
-Only after the model family, hyperparameters, preprocessing, calibration
-strategy and operating threshold were locked was the held-out test set
-accessed.
+Before the held-out set could be evaluated, a pre-flight gate verified:
 
-A pre-flight gate verified:
-
-- model configuration consistency;
-- calibration lock consistency;
-- threshold lock consistency;
+- candidate model locked;
+- hyperparameters locked;
+- sigmoid calibration locked;
+- operating threshold locked at 0.110;
 - zero patient overlap;
-- schema validity;
-- target validity;
-- feature-engineering consistency;
-- absence of previous held-out access.
+- zero encounter overlap;
+- binary held-out target;
+- training/held-out schema alignment;
+- 42 model features;
+- no previous held-out access record.
 
-The final model was then evaluated once on the held-out cohort.
+Only after all checks passed was the final evaluation executed.
+
+The held-out test set was accessed once.
+
+The resulting test performance was then recorded without any post-hoc model modification.
+
+### Week 8 — Project finalization
+
+After final evaluation, Week 8 is restricted to:
+
+- documentation;
+- visualization;
+- reproducibility;
+- QA;
+- repository packaging.
+
+No Week-8 change may be justified by improving the already observed held-out performance.
 
 ---
 
-## Final held-out performance
+## Patient-level leakage prevention
 
-The final held-out cohort contained:
+Healthcare datasets frequently contain multiple encounters belonging to the same individual.
 
-```text
-19,870 encounters
-2,263 positive 30-day readmissions
-```
+Randomly splitting rows without accounting for patient identity can therefore allow information from the same patient to appear in both training and validation data.
 
-Observed 30-day readmission prevalence:
+This project explicitly prevents that leakage.
 
-```text
-0.11389
-```
+Patient identifiers are used to define development and held-out partitions and to construct grouped cross-validation folds.
 
-Mean predicted probability:
+The final Week-7 pre-flight audit confirmed:
 
-```text
-0.11420
-```
+- development encounters: **79,473**
+- held-out encounters: **19,870**
+- development unique patients: **55,952**
+- held-out unique patients: **14,038**
+- patient overlap: **0**
+- encounter overlap: **0**
 
-### Discrimination and probability quality
+Patient-level leakage prevention is treated as a methodological requirement rather than an optional modelling enhancement.
 
-| Metric | Final held-out result |
-|---|---:|
-| PR-AUC | 0.1924 |
-| ROC-AUC | 0.6450 |
-| Brier score | 0.0980 |
-| Log loss | 0.3410 |
+---
 
-### Calibration
+## Nested cross-validation
 
-| Metric | Final held-out result |
-|---|---:|
-| Calibration intercept | -0.0983 |
-| Calibration slope | 0.9513 |
-| ECE, 10 equal-width bins | 0.00647 |
+Model selection was conducted with nested cross-validation.
 
-The mean predicted probability closely matched the observed prevalence at the
-cohort level.
+The outer loop estimates candidate performance on unseen development folds.
 
-The calibration slope was close to 1, although calibration performance should
-still be interpreted in the context of this single held-out cohort.
+The inner loop performs model configuration selection.
 
-### Performance at the locked threshold
+This separation reduces optimistic bias associated with evaluating candidate configurations on the same observations used to select them.
 
-At the pre-specified threshold of:
+Week-6 nested evaluation used:
 
-```text
-0.110
-```
+- **5 outer folds**
+- **3 inner folds**
+- patient grouping
+- PR-AUC as the primary model-selection criterion.
 
-the final held-out results were:
+The selected Random Forest showed stable hyperparameter selection across all five outer folds.
 
-| Metric | Final result |
-|---|---:|
-| Sensitivity | 0.5926 |
-| Specificity | 0.6115 |
-| Precision | 0.1639 |
-| F1 score | 0.2568 |
-| Balanced accuracy | 0.6020 |
-| Predicted-positive rate | 0.4118 |
+---
 
-### Final confusion matrix
+## Why PR-AUC?
 
-|  | Predicted negative | Predicted positive |
-|---|---:|---:|
-| Actual negative | 10,766 | 6,841 |
-| Actual positive | 922 | 1,341 |
+The outcome is imbalanced, with approximately **11%** of encounters experiencing 30-day readmission.
 
-Therefore:
+ROC-AUC remains useful for evaluating ranking discrimination, but it can appear relatively favourable when the negative class dominates.
 
-```text
-TN = 10,766
-FP = 6,841
-FN = 922
-TP = 1,341
-```
+PR-AUC provides additional focus on performance for the positive class and was therefore used as the primary model-selection metric.
+
+Model selection did not rely on any single metric in isolation.
+
+Probability quality, stability, interpretability and methodological simplicity were also considered.
+
+---
+
+## Calibration and discrimination are separate
+
+A model can rank individuals reasonably well while producing poorly calibrated absolute probabilities.
+
+For that reason, this project treats:
+
+- discrimination;
+- probability calibration;
+- operating-threshold selection
+
+as separate methodological stages.
+
+Model-family selection occurred first.
+
+Probability calibration was then assessed using cross-fitted development predictions.
+
+Only after calibration was frozen was the operating threshold selected.
+
+This prevents the final held-out test set from influencing any of these decisions.
 
 ---
 
 ## Development versus held-out performance
 
-The final held-out discrimination was broadly consistent with the
-patient-grouped development estimates.
+The final test results are broadly compatible with the development estimates.
 
-| Metric | Development | Held-out |
-|---|---:|---:|
-| PR-AUC | ~0.2070 | 0.1924 |
-| ROC-AUC | ~0.6473 | 0.6450 |
-| Brier score | ~0.0980 | 0.0980 |
+The selected Random Forest had nested-development performance around:
 
-This consistency suggests that the development procedure produced a reasonably
-stable estimate of final predictive performance.
+- PR-AUC: approximately **0.207**
+- ROC-AUC: approximately **0.647**
+- Brier score: approximately **0.098**
 
-It does not establish external validity.
+The final held-out performance was:
 
----
+- PR-AUC: approximately **0.192**
+- ROC-AUC: approximately **0.645**
+- Brier score: approximately **0.098**
 
-## Interpretation
+ROC-AUC and Brier score remained highly consistent between development and the final held-out evaluation.
 
-The final model demonstrates **modest discrimination** for 30-day readmission.
-
-Its ROC-AUC of approximately 0.645 indicates useful but limited ranking ability.
-
-PR-AUC must be interpreted relative to the imbalanced outcome prevalence.
-
-Probability quality remained comparatively stable between development and
-held-out evaluation, and the calibrated mean risk closely approximated the
-observed event prevalence.
-
-At the frozen operating threshold, sensitivity and specificity are both close
-to 0.60.
-
-However, because the outcome is imbalanced, precision remains low and the
-predicted-positive rate is substantially higher than the observed readmission
-prevalence.
-
-This trade-off follows from the pre-specified balanced-accuracy objective.
-
-The results should therefore be interpreted as a methodological demonstration
-of a disciplined predictive-development workflow rather than evidence of
-clinical deployment readiness.
+The lower final PR-AUC is compatible with ordinary sampling and cohort variation and was not used to alter the model after evaluation.
 
 ---
 
-## Preprocessing
+## Automated testing and QA
 
-All modelling preprocessing is performed inside the machine-learning pipeline
-to prevent information leakage.
+The repository includes automated tests covering core stages of the pipeline.
 
-The final feature schema contains:
+Current project QA status:
 
-```text
-42 modelling features
-```
+**61 tests passed**
 
-including:
+The test suite includes safeguards for:
 
-- numerical encounter features;
-- demographic categorical variables;
-- admission characteristics;
-- diagnosis-group variables;
-- medication variables;
-- diabetes-treatment variables;
-- medical specialty.
+- data processing;
+- feature engineering;
+- model preprocessing;
+- baseline modelling;
+- model comparison;
+- nested model selection;
+- selection locking;
+- probability calibration;
+- threshold selection;
+- protected final evaluation;
+- Week-8 visualization artefacts.
 
-Numerical variables are processed within the modelling pipeline.
+Source-control QA also includes:
 
-Categorical variables are encoded using fold-safe transformations.
+`git diff --check`
 
-Medical specialty is handled separately because of its comparatively high
-cardinality.
+to detect whitespace errors before versioning.
 
-Preprocessing parameters are learned only from the relevant training portion
-of each fold.
+The final visualization artefacts are additionally tested for existence and non-zero file size.
 
 ---
 
-## Leakage-control strategy
+## Reproducible final visualizations
 
-Leakage prevention is a central design feature of this repository.
+Week 8 generates the portfolio-facing final figures directly from the frozen Week-7 result artefacts.
 
-The workflow includes:
+The visualization command is:
 
-- patient-grouped development splitting;
-- zero patient overlap between development and held-out data;
-- fold-local preprocessing;
-- training-only EDA;
-- nested cross-validation for model selection;
-- cross-fitted calibration assessment;
-- cross-fitted threshold selection;
-- frozen model specifications before final evaluation;
-- a protected one-time held-out test;
-- explicit post-evaluation closure of the development cycle.
+`python -m diabetes_readmission.w8_visualization`
 
-The final held-out test set must not be reused for additional optimization.
+It produces:
+
+- `figures/w7_final_performance_summary.png`
+- `figures/w7_final_confusion_matrix.png`
+- `figures/w7_final_calibration.png`
+
+The visualization stage performs **no model fitting, calibration fitting, threshold optimisation or held-out decision making**.
 
 ---
 
 ## Repository structure
 
-A simplified view of the project is:
+    diabetes-readmission-ml-pipeline/
+    ├── data/
+    │   ├── raw/
+    │   ├── processed/
+    │   └── intermediate/
+    ├── figures/
+    │   ├── eda_target_distribution.png
+    │   ├── eda_age_readmission_prevalence.png
+    │   ├── eda_prior_inpatient_readmission_prevalence.png
+    │   ├── baseline_logistic_calibration.png
+    │   ├── baseline_logistic_probability_distribution.png
+    │   ├── w7_final_performance_summary.png
+    │   ├── w7_final_confusion_matrix.png
+    │   └── w7_final_calibration.png
+    ├── reports/
+    │   ├── model_selection_protocol.md
+    │   ├── w5_model_comparison_findings.md
+    │   ├── w6_model_selection_decision.md
+    │   ├── w6_calibration_protocol.md
+    │   ├── w6_calibration_decision.md
+    │   ├── w6_threshold_protocol.md
+    │   ├── w6_threshold_decision.md
+    │   ├── w7_final_evaluation_protocol.md
+    │   ├── w7_final_evaluation_findings.md
+    │   ├── w7_final_metrics.csv
+    │   ├── w7_final_confusion_matrix.csv
+    │   ├── w7_final_calibration.csv
+    │   └── w8_project_finalization_protocol.md
+    ├── src/
+    │   └── diabetes_readmission/
+    │       ├── model_preprocessing.py
+    │       ├── modelling.py
+    │       ├── model_selection.py
+    │       ├── selection_lock.py
+    │       ├── calibration.py
+    │       ├── threshold_selection.py
+    │       ├── w7_preflight.py
+    │       ├── w7_final_evaluation.py
+    │       └── w8_visualization.py
+    ├── tests/
+    ├── model_card.md
+    ├── requirements.txt
+    ├── requirements-lock.txt
+    └── README.md
 
-```text
-diabetes-readmission-ml-pipeline/
-│
-├── data/
-│   ├── raw/
-│   ├── processed/
-│   └── intermediate/
-│
-├── figures/
-│
-├── reports/
-│   ├── model_selection_protocol.md
-│   ├── model_feature_schema.csv
-│   ├── w5_model_comparison_findings.md
-│   ├── w5_model_comparison_summary.csv
-│   ├── w6_model_selection_protocol.md
-│   ├── w6_model_selection_decision.md
-│   ├── w6_model_selection_summary.csv
-│   ├── w6_selected_model.json
-│   ├── w6_calibration_protocol.md
-│   ├── w6_calibration_findings.md
-│   ├── w6_calibration_lock.json
-│   ├── w6_threshold_protocol.md
-│   ├── w6_threshold_findings.md
-│   ├── w6_threshold_lock.json
-│   ├── w7_final_evaluation_protocol.md
-│   ├── w7_preflight_audit.csv
-│   ├── w7_final_metrics.csv
-│   ├── w7_final_confusion_matrix.csv
-│   ├── w7_final_calibration.csv
-│   ├── w7_final_evaluation_findings.md
-│   ├── w7_final_evaluation_run_state.json
-│   └── w8_project_finalization_protocol.md
-│
-├── src/
-│   └── diabetes_readmission/
-│
-├── tests/
-│
-├── model_card.md
-├── README.md
-├── requirements.txt
-└── requirements-lock.txt
-```
-
-Dataset-level intermediate prediction files may remain local when appropriate
-and are not committed solely for convenience.
+Large intermediate and row-level prediction artefacts remain local when appropriate and are not committed merely for convenience.
 
 ---
 
-## Reproducibility
+## Main reproducibility commands
 
-Create or activate the project Python environment and install the required
-dependencies.
+From the repository root, activate the project environment.
 
-Example:
+For example:
 
-```bash
-pip install -r requirements.txt
-```
+`conda activate ./.venv`
 
-The repository also contains a locked dependency specification:
+Run the automated test suite:
 
-```text
-requirements-lock.txt
-```
+`python -m pytest -q`
 
-Run the automated test suite with:
+Run source formatting/whitespace QA:
 
-```bash
-python -m pytest -q
-```
+`git diff --check`
 
-The repository reached Week 8 with:
+Generate the final Week-8 visualizations:
 
-```text
-55 tests passing
-```
+`python -m diabetes_readmission.w8_visualization`
 
-before final documentation work began.
-
-Whitespace and patch integrity can be checked with:
-
-```bash
-git diff --check
-```
+The one-time Week-7 held-out evaluation is **not** a routine reproducibility command because the held-out test set has already been consumed for this development iteration.
 
 ---
 
-## Reproducing project stages
+## Key project artefacts
 
-The repository contains dedicated modules for the major modelling stages.
+### Model selection
 
-Examples include:
+- `reports/model_selection_protocol.md`
+- `reports/w6_model_selection_decision.md`
+- `reports/w6_selected_model.json`
 
-```text
-src/diabetes_readmission/model_preprocessing.py
-src/diabetes_readmission/modelling.py
-src/diabetes_readmission/model_comparison.py
-src/diabetes_readmission/model_selection.py
-src/diabetes_readmission/selection_lock.py
-src/diabetes_readmission/calibration.py
-src/diabetes_readmission/threshold_selection.py
-src/diabetes_readmission/w7_preflight.py
-src/diabetes_readmission/w7_final_evaluation.py
-```
+### Calibration
 
-Many of the corresponding outputs are stored under:
+- `reports/w6_calibration_protocol.md`
+- `reports/w6_calibration_findings.md`
+- `reports/w6_calibration_decision.md`
+- `reports/w6_calibration_lock.json`
 
-```text
-reports/
-```
+### Threshold selection
 
-The report artifacts provide a versioned audit trail of the major modelling
-decisions.
+- `reports/w6_threshold_protocol.md`
+- `reports/w6_threshold_findings.md`
+- `reports/w6_threshold_decision.md`
+- `reports/w6_threshold_lock.json`
+
+### Final evaluation
+
+- `reports/w7_final_evaluation_protocol.md`
+- `reports/w7_preflight_audit.csv`
+- `reports/w7_final_metrics.csv`
+- `reports/w7_final_confusion_matrix.csv`
+- `reports/w7_final_calibration.csv`
+- `reports/w7_final_evaluation_findings.md`
+- `reports/w7_final_evaluation_run_state.json`
+
+### Final model documentation
+
+- `model_card.md`
 
 ---
 
-## Final model card
+## Model interpretation
 
-A detailed methodological description of the completed model-development cycle
-is available in:
+The final model demonstrates measurable predictive signal for 30-day readmission, but its discrimination remains moderate.
 
-```text
-model_card.md
-```
+A ROC-AUC of approximately **0.645** indicates that the model ranks higher-risk and lower-risk encounters better than chance, but substantial overlap remains between patients who are and are not readmitted.
 
-The model card documents:
+The PR-AUC of approximately **0.192** should be interpreted relative to the event prevalence of approximately **0.114**.
 
-- baseline modelling;
-- model selection;
-- final model specification;
-- calibration;
-- operating-threshold selection;
-- final held-out evaluation;
-- limitations;
-- frozen development status.
+Probability calibration on the held-out cohort was comparatively strong, with:
+
+- Brier score approximately **0.098**
+- calibration slope approximately **0.95**
+- ECE approximately **0.0065**
+
+At the frozen operating threshold of **0.110**, sensitivity and specificity are both close to 0.60.
+
+However, the positive predictive value remains low because of the imbalanced outcome.
 
 ---
 
 ## Limitations
 
-Several limitations should be considered when interpreting this project.
+Important limitations include:
 
-### Dataset and transportability
+- retrospective observational data;
+- class imbalance;
+- limited clinical granularity;
+- heterogeneous hospital populations;
+- potential temporal and institutional distribution shift;
+- absence of external validation;
+- absence of prospective validation;
+- no clinical-utility analysis;
+- no decision-curve analysis;
+- no causal interpretation.
 
-The analysis is based on a historical hospital dataset.
-
-Performance in different hospitals, healthcare systems, time periods or patient
-populations cannot be assumed from the present evaluation.
-
-### Outcome imbalance
-
-Thirty-day readmission is substantially less frequent than non-readmission.
-
-Consequently, metrics such as accuracy alone would be misleading.
-
-This project therefore emphasizes PR-AUC, ROC-AUC, Brier score, calibration,
-sensitivity, specificity and balanced accuracy.
-
-### Moderate discrimination
-
-The final model provides only moderate discrimination.
-
-It should not be interpreted as a high-performance clinical decision system.
-
-### Threshold interpretation
-
-The operating threshold of 0.110 was selected according to a predefined
-statistical objective.
-
-It was not derived from clinical costs, treatment effects, resource
-constraints or prospective clinical utility.
-
-### No prospective validation
-
-The project does not include:
-
-- prospective validation;
-- temporal external validation;
-- multi-centre external validation;
-- intervention testing;
-- clinical-impact analysis.
-
-### Predictive rather than causal modelling
-
-Model features may be associated with readmission risk without being causal
-determinants of readmission.
-
-Feature importance or predictive association must therefore not be interpreted
-as evidence of causality.
+The final held-out result represents internal validation for the current development iteration, not external clinical validation.
 
 ---
 
-## Methodological safeguards
+## Future work
 
-The repository deliberately separates:
+Any future performance-improvement work must begin as a **new development iteration**.
 
-```text
-model development
-        ↓
-model selection
-        ↓
-probability calibration
-        ↓
-operating-threshold selection
-        ↓
-frozen specification
-        ↓
-one-time held-out evaluation
-```
+Potential future directions include:
 
-This separation reduces the risk of optimistic performance estimates caused by
-repeatedly adapting the model to the test set.
+- independent external validation;
+- temporal validation;
+- richer longitudinal patient histories;
+- additional laboratory and clinical variables;
+- gradient-boosted tree models;
+- explicit missingness modelling;
+- subgroup and fairness analysis;
+- uncertainty quantification;
+- decision-curve analysis;
+- clinical-utility assessment.
 
-After Week 7, the held-out test set is considered consumed.
-
-Any future performance improvement should begin as a new development iteration
-using new independent validation data.
+The current held-out cohort must not be reused as a tuning set.
 
 ---
 
-## What this project demonstrates
+## Skills demonstrated
 
-This repository is intended to demonstrate practical skills in:
+This project demonstrates practical experience with:
 
-- biomedical data science;
-- clinical machine learning;
 - Python;
-- pandas;
+- pandas and NumPy;
 - scikit-learn;
-- reproducible modelling;
+- clinical machine learning;
+- imbalanced classification;
 - patient-level data partitioning;
 - leakage prevention;
 - nested cross-validation;
-- imbalanced classification;
 - probability calibration;
-- threshold analysis;
+- operating-threshold analysis;
 - model evaluation;
-- automated testing;
+- automated testing with pytest;
 - Git and GitHub workflows;
-- scientific documentation.
+- reproducible scientific documentation.
 
 The emphasis is not simply on obtaining the highest possible metric.
 
-The primary objective is to build a **traceable, reproducible and
-methodologically defensible predictive workflow**.
+The primary objective is to build a **traceable, reproducible and methodologically defensible predictive workflow**.
 
 ---
 
 ## Development closure
 
-The Week-7 protected evaluation completed the current predictive-development
-cycle.
+The Week-7 protected evaluation completed the current predictive-development cycle.
 
 The following components are now frozen:
 
@@ -753,11 +657,9 @@ The following components are now frozen:
 5. operating threshold of 0.110;
 6. final held-out evaluation.
 
-Week 8 is restricted to documentation, visualization, QA, reproducibility and
-project packaging.
+Week 8 is restricted to documentation, visualization, QA, reproducibility and project packaging.
 
-No Week-8 modification may be justified by improving the already observed
-held-out performance.
+No Week-8 modification may be justified by improving the already observed held-out performance.
 
 ---
 
@@ -765,7 +667,4 @@ held-out performance.
 
 This repository is a data-science and machine-learning portfolio project.
 
-The model is **not a clinically validated medical device or clinical
-decision-support system** and must not be used to make patient-care decisions
-without appropriate independent validation, clinical evaluation and regulatory
-assessment.
+The model is **not a clinically validated medical device or clinical decision-support system** and must not be used to make patient-care decisions without appropriate independent validation, clinical evaluation and regulatory assessment.
