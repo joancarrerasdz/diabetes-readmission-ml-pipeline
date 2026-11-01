@@ -330,9 +330,11 @@ At the end of Week 5:
 - model-development outputs are reproducible;
 - the held-out test set remains untouched.
 
-## Current development stage
+## Week 5 development stage (historical)
 
-Weeks 1–5 have established:
+> **Historical section.** The statements below describe the repository state at the end of Week 5 and are retained for development traceability. They are superseded by the final locked model, sigmoid calibration, operating threshold of 0.110, and protected Week-7 held-out evaluation documented later in this model card.
+
+Weeks 1–5 had established:
 
 1. reproducible data acquisition;
 2. clinical outcome and cohort definition;
@@ -344,8 +346,11 @@ Weeks 1–5 have established:
 8. OOF diagnostics;
 9. linear versus non-linear baseline comparison.
 
-The next modelling stage should begin only after this Week-5 baseline
-state is merged and treated as the new reproducible project baseline.
+At that point in the project, the next modelling stage was intended to begin only after this Week-5 baseline
+state had been merged and treated as the reproducible project baseline.
+
+That condition was subsequently satisfied. The authoritative final development state is documented in the
+"Final locked model and Week 7 held-out evaluation" section below.
 
 ---
 
