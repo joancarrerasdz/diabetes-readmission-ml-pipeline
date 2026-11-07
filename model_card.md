@@ -266,22 +266,28 @@ selection at this stage.
 Threshold selection will remain separate from model-development and
 model-comparison decisions.
 
-## Current model-selection status
+## Week 5 model-selection status (historical)
 
-No final production model has been selected.
+> **Historical section.** The statements below describe the model-selection
+> status at the end of Week 5. They are retained for development traceability
+> and are superseded by the final locked Random Forest model, sigmoid
+> calibration, operating threshold of 0.110, and protected Week-7 held-out
+> evaluation documented later in this model card.
 
-Current evidence indicates:
+At the end of Week 5, no final candidate model had yet been selected.
 
-- logistic regression provides a strong, interpretable baseline;
-- random forest provides a modest improvement in discrimination;
-- Brier-score performance is essentially equivalent between the two.
+Evidence available at that stage indicated that:
 
-The logistic regression therefore remains the principal interpretable
-reference model, while the Random Forest is retained as a non-linear
+- logistic regression provided a strong, interpretable baseline;
+- random forest provided a modest improvement in discrimination;
+- probability-quality differences required formal Week-6 model selection.
+
+The logistic regression therefore remained the principal interpretable
+reference model, while the Random Forest was retained as a non-linear
 comparator.
 
-Any later model-selection decision must be made before accessing the
-held-out test set.
+Subsequent Week-6 patient-grouped nested cross-validation selected and locked
+the Random Forest candidate before the held-out test set was accessed.
 
 ## Evaluation metrics
 
