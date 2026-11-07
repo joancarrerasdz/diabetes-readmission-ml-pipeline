@@ -521,6 +521,64 @@ The one-time Week-7 held-out evaluation is **not** a routine reproducibility com
 
 ---
 
+## Clean-room reproducibility
+
+A separate clean-room reproducibility certification was performed after
+completion of the protected Week-7 held-out evaluation.
+
+The verification used:
+
+- a fresh repository clone;
+- a fresh Python 3.11 virtual environment;
+- installation of the project dependencies;
+- installation of the local project package;
+- package import without manually setting `PYTHONPATH`;
+- safe automated-test execution;
+- independent testing of the Week-7 final-evaluation firewall;
+- verification that the completed final-evaluation run state remained unchanged.
+
+The clean-room execution produced:
+
+- **56/56 safe pipeline tests passed**
+- **1/1 final-evaluation firewall test passed**
+- **57 successful QA checks in total**
+
+The protected held-out evaluation was **not re-executed**.
+
+No model fitting, calibration fitting, operating-threshold optimisation,
+feature-selection decision or held-out predictive evaluation was performed
+during this certification.
+
+The detailed evidence is recorded in:
+
+- `reports/w8_cleanroom_reproducibility_audit.md`
+
+### Clean-room reconstruction procedure
+
+From a fresh clone, create and activate an isolated Python 3.11 environment,
+then install the project dependencies and package.
+
+For example:
+
+    python3.11 -m venv .venv
+    source .venv/bin/activate
+    python -m pip install --upgrade pip
+    python -m pip install -r requirements-lock.txt
+    python -m pip install --no-deps -e .
+
+Run the safe automated-test suite without executing the protected Week-7
+final-evaluation module:
+
+    python -m pytest -q --ignore=tests/test_w7_final_evaluation.py
+
+Then verify only the execution firewall:
+
+    python -m pytest -q tests/test_w7_final_evaluation.py::test_final_evaluation_is_blocked_without_confirmation
+
+The one-time Week-7 held-out evaluation itself must not be rerun.
+
+---
+
 ## Key project artefacts
 
 ### Model selection
